@@ -9,11 +9,9 @@ class OrderDetail extends Model
 {
     use HasFactory;
 
-    protected $table = 'daftarorderdetail'; // Nama tabel di database
-
-    protected $primaryKey = 'idorderdetail'; // Primary key
-
-    public $timestamps = false; // Tidak ada kolom created_at dan updated_at
+    protected $table = 'daftarorderdetail';
+    protected $primaryKey = 'idorderdetail';
+    public $timestamps = false;
 
     protected $fillable = [
         'nomerorder',
@@ -30,9 +28,18 @@ class OrderDetail extends Model
         'subtotalproduk'
     ];
 
-    // Relasi ke Order
     public function order()
     {
         return $this->belongsTo(Order::class, 'nomerorder', 'nomerorder');
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'idproduct');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'iduser');
     }
 }

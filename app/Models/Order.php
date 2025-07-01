@@ -9,32 +9,23 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $table = 'daftarorder'; // Nama tabel di database
-
-    protected $primaryKey = 'idorder'; // Primary key kustom
-
-    public $timestamps = false; // Karena tidak ada kolom created_at dan updated_at
+    protected $table = 'daftarorder';
+    protected $primaryKey = 'idorder';
+    public $timestamps = false;
 
     protected $fillable = [
-        'nomerorder',
-        'iduser',
-        'tanggalorder',
-        'jamorder',
-        'status',
-        'statustrack',
-        'itemsubtotal',
-        'discon',
-        'coupon',
-        'kodekupon',
-        'persdiskon',
-        'tax',
-        'shippingprice',
-        'ordertotal'
+        'nomerorder', 'iduser', 'tanggalorder', 'jamorder',
+        'status', 'statustrack', 'itemsubtotal', 'discon', 'coupon',
+        'kodekupon', 'persdiskon', 'tax', 'shippingprice', 'ordertotal'
     ];
 
-    // Relasi ke OrderDetail
-    public function orderDetails()
+    public function details()
     {
         return $this->hasMany(OrderDetail::class, 'nomerorder', 'nomerorder');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'iduser');
     }
 }
