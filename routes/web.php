@@ -28,10 +28,10 @@ Route::get('/', function () {
 Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.show');
 
 // ADMIN Routes
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'role:admin'])->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
     Route::resource('products', AdminProductController::class);
-    Route::resource('sales', SalesController::class); 
+    Route::resource('sales', SalesController::class);
     Route::get('/apriori', [AprioriController::class, 'index'])->name('apriori.index');
     Route::post('/apriori/process', [AprioriController::class, 'process'])->name('apriori.process');
     Route::get('/results', [ResultController::class, 'index'])->name('results.index');
