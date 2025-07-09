@@ -11,20 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            if (!Schema::hasColumn('users', 'role')) {
-                $table->string('role')->default('customer')->after('password');
-            }
+        Schema::create('apriori_rules', function (Blueprint $table) {
+            $table->id();
+            $table->string('lhs'); 
+            $table->string('rhs'); 
+            $table->float('support'); 
+            $table->float('confidence'); 
+            $table->timestamps();
         });
     }
+
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('role');
-        });
+        Schema::dropIfExists('apriori_rules');
     }
-
 };

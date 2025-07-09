@@ -36,13 +36,14 @@
         <div class="card-body table-responsive">
             <table class="table table-bordered table-hover align-middle text-center">
                 <thead class="table-light">
-                    <tr><th>No</th><th>Item</th></tr>
+                    <tr><th>No</th><th>Item</th><th>Frekuensi</th></tr>
                 </thead>
                 <tbody>
                     @foreach($frequent1Itemsets as $index => $itemset)
                         <tr>
                             <td>{{ $index + 1 }}</td>
-                            <td>{{ implode(', ', $itemset) }}</td>
+                            <td>{{ implode(', ', $itemset['item']) }}</td>
+                            <td>{{ $itemset['frequency'] }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -60,13 +61,14 @@
         <div class="card-body table-responsive">
             <table class="table table-bordered table-hover align-middle text-center">
                 <thead class="table-light">
-                    <tr><th>No</th><th>Itemset</th><th>Support</th></tr>
+                    <tr><th>No</th><th>Itemset</th><th>Frekuensi</th><th>Support</th></tr>
                 </thead>
                 <tbody>
                     @foreach($frequent2Itemsets as $index => $itemset)
                         <tr>
                             <td>{{ $index + 1 }}</td>
                             <td>{{ implode(', ', $itemset['itemset']) }}</td>
+                            <td>{{ $itemset['frequency'] }}</td>
                             <td>{{ $itemset['support'] }}%</td>
                         </tr>
                     @endforeach

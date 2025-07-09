@@ -10,15 +10,13 @@ class ProductRecommendationController extends Controller
 {
     public function show($id)
     {
-        // Ambil produk yang ditekan user
         $product = Product::findOrFail($id);
 
-        // Ambil nama produk sebagai antecedent dari rule apriori
-        $recommendedNames = AprioriRule::where('antecedent', 'like', '%' . $product->nama . '%')
-                                        ->pluck('consequent');
+        // Ambil produk yang disarankan sesuai rule Apriori
+        $rules = AprioriRule::where('lhs', $product->namaproduk)->get();
+        $recommendedNames = $rules->pluck('rhs')->toArray();
 
-        // Ambil produk-produk rekomendasi sesuai consequent
-        $recommendations = Product::whereIn('nama', $recommendedNames)->get();
+        $recommendations = Product::whereIn('namaproduk', $recommendedNames)->get();
 
         return view('user.recommendation', compact('product', 'recommendations'));
     }

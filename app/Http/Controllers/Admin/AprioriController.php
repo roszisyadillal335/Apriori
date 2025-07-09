@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\OrderDetail;
+use App\Models\AprioriRule;
 
 class AprioriController extends Controller
 {
@@ -19,6 +20,7 @@ class AprioriController extends Controller
         $minSupport2 = floatval($request->support2);
         $minConfidence = floatval($request->confidence);
 
+        // Ambil transaksi: group berdasarkan nomerorder
         $transactions = OrderDetail::select('nomerorder', 'namaproduk')->get()
             ->groupBy('nomerorder')
             ->map(function ($group) {
@@ -27,7 +29,7 @@ class AprioriController extends Controller
 
         $totalTransactions = count($transactions);
 
-        // Generate 1-itemset
+        // 1-itemset
         $itemCounts = [];
         foreach ($transactions as $transaction) {
             foreach ($transaction as $item) {
@@ -39,16 +41,22 @@ class AprioriController extends Controller
         foreach ($itemCounts as $item => $count) {
             $support = ($count / $totalTransactions) * 100;
             if ($support >= $minSupport1) {
-                $frequent1Itemsets[] = [$item];
+                $frequent1Itemsets[] = [
+                    'item' => [$item],
+                    'frequency' => $count
+                ];
             }
         }
 
-        // Generate 2-itemset
+        // 2-itemset candidates
         $candidates2 = [];
         $count = count($frequent1Itemsets);
         for ($i = 0; $i < $count; $i++) {
             for ($j = $i + 1; $j < $count; $j++) {
-                $combined = array_unique(array_merge($frequent1Itemsets[$i], $frequent1Itemsets[$j]));
+                $combined = array_unique(array_merge(
+                    $frequent1Itemsets[$i]['item'],
+                    $frequent1Itemsets[$j]['item']
+                ));
                 sort($combined);
                 if (count($combined) == 2) {
                     $candidates2[] = $combined;
@@ -56,6 +64,7 @@ class AprioriController extends Controller
             }
         }
 
+        // 2-itemset frequent
         $frequent2Itemsets = [];
         foreach ($candidates2 as $itemset) {
             $supportCount = $this->getSupportCount($itemset, $transactions);
@@ -63,15 +72,21 @@ class AprioriController extends Controller
             if ($support >= $minSupport2) {
                 $frequent2Itemsets[] = [
                     'itemset' => $itemset,
+                    'frequency' => $supportCount,
                     'support' => round($support, 2)
                 ];
             }
         }
 
+        // Hapus rules sebelumnya
+        AprioriRule::truncate();
+
+        // Generate rules
         $rules = [];
         foreach ($frequent2Itemsets as $itemsetData) {
             $itemset = $itemsetData['itemset'];
             $supportCount = $this->getSupportCount($itemset, $transactions);
+
             foreach ($itemset as $item) {
                 $X = [$item];
                 $Y = array_diff($itemset, $X);
@@ -79,16 +94,29 @@ class AprioriController extends Controller
                 $confidence = $supportX > 0 ? ($supportCount / $supportX) * 100 : 0;
 
                 if ($confidence >= $minConfidence) {
+                    $lhs = implode(', ', $X);
+                    $rhs = implode(', ', $Y);
+                    $supportPercent = ($supportCount / $totalTransactions) * 100;
+
+                    // Simpan ke database
+                    AprioriRule::create([
+                        'lhs' => $lhs,
+                        'rhs' => $rhs,
+                        'support' => round($supportPercent, 2),
+                        'confidence' => round($confidence, 2),
+                    ]);
+
+                    // Simpan untuk ditampilkan di blade
                     $rules[] = [
-                        'rule' => implode(', ', $X) . ' => ' . implode(', ', $Y),
-                        'support' => round(($supportCount / $totalTransactions) * 100, 2) . '%',
+                        'rule' => "$lhs => $rhs",
+                        'support' => round($supportPercent, 2) . '%',
                         'confidence' => round($confidence, 2) . '%',
                     ];
                 }
             }
         }
 
-        // Simpan rules untuk ditampilkan di halaman hasil rekomendasi
+        // Simpan session
         session(['apriori_rules' => $rules]);
 
         return view('admin.apriori.index', [
@@ -109,5 +137,4 @@ class AprioriController extends Controller
         }
         return $count;
     }
-
 }

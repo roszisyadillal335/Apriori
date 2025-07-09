@@ -24,8 +24,8 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// Route public detail produk (optional, kalau mau detail produk public)
-Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.show');
+// // Route public detail produk (optional, kalau mau detail produk public)
+// Route::get('/produk/{id}', [ProductController::class, 'show'])->name('user.recommendation');
 
 // ADMIN Routes
 Route::middleware(['auth', 'role:admin'])->name('admin.')->group(function () {
@@ -38,10 +38,13 @@ Route::middleware(['auth', 'role:admin'])->name('admin.')->group(function () {
 });
 
 // CUSTOMER Routes
-Route::middleware(['auth', 'role:customer'])->prefix('user')->name('user.')->group(function () {
-    Route::get('/show', [UserController::class, 'show'])->name('show');
-    Route::get('/user/product/{id}', [ProductRecommendationController::class, 'show'])->name('user.product.show');
-});
+Route::middleware(['auth', 'role:customer'])
+    ->prefix('user')
+    ->name('user.')
+    ->group(function () {
+        Route::get('/show', [UserController::class, 'show'])->name('show'); // Halaman beranda user
+        Route::get('/product/{idproduct}', [ProductRecommendationController::class, 'show'])->name('product.show'); // Detail + rekomendasi produk
+    });
 
 // Profile Routes (common for all roles)
 Route::middleware('auth')->group(function () {
