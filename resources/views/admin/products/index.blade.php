@@ -4,7 +4,9 @@
 
 @section('content')
 <div class="container mt-4">
-    <h3 class="mb-4">Daftar Produk</h3>
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h1 class="fw-bold display-6 text-dark mb-0">Daftar Penjualan</h1>
+    </div>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -52,4 +54,10 @@
         </tbody>
     </table>
 </div>
+<style>
+    h1.display-6 {
+        letter-spacing: 0.5px;
+        font-family: 'Segoe UI', Roboto, sans-serif;
+    }
+</style>
 @endsection

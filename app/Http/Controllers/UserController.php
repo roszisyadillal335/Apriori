@@ -9,7 +9,10 @@ class UserController extends Controller
 {
     public function show()
     {
-        $products = Product::all();
+        $products = Product::select('namaproduk', 'gambar', 'hargaproduk', 'idproduct')
+                   ->distinct()
+                   ->orderByDesc('idproduct')
+                   ->paginate(12);
         return view('user.show', compact('products'));
     }
 }
