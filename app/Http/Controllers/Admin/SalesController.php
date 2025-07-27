@@ -11,7 +11,7 @@ class SalesController extends Controller
 {
     public function index()
     {
-        $orders = Order::with(['details', 'user'])->get();
+        $orders = Order::with(['details', 'user'])->paginate(10); // 10 orders per page
         return view('admin.sales.index', compact('orders'));
     }
 

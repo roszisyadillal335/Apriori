@@ -12,7 +12,7 @@ class DashboardController extends Controller
     public function index()
     {
         return view('admin.dashboard.index', [
-            'totalProduk' => Product::count(),
+            'totalProduk' => Product::distinct('idproduct')->count('idproduct'),
             'totalPenjualan' => Order::sum('ordertotal'),
             'totalTransaksi' => Order::count(),
             'totalRekomendasi' => AprioriRule::count()

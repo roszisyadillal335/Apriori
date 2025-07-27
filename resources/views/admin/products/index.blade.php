@@ -3,61 +3,89 @@
 @section('title', 'Manajemen Produk')
 
 @section('content')
-<div class="container mt-4">
+<div class="container mt-5">
     <div class="d-flex align-items-center justify-content-between mb-4">
-        <h1 class="fw-bold display-6 text-dark mb-0">Daftar Penjualan</h1>
+        <h1 class="fw-bold text-dark display-6">📦 Daftar Produk</h1>
+        <a href="{{ route('admin.products.create') }}" class="btn btn-primary shadow-sm">
+            <i class="fas fa-plus me-1"></i> Tambah Produk
+        </a>
     </div>
 
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+        <div class="alert alert-success shadow-sm">{{ session('success') }}</div>
     @endif
 
-    <a href="{{ route('admin.products.create') }}" class="btn btn-primary mb-3">
-        <i class="fas fa-plus"></i> Tambah Produk
-    </a>
+    <div class="card border-0 shadow-sm">
+        <div class="card-body table-responsive p-4">
+            <table class="table table-hover align-middle text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Gambar</th>
+                        <th scope="col">Nama Produk</th>
+                        <th scope="col">Harga</th>
+                        <th scope="col">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($products as $produk)
+                        <tr>
+                            <td>{{ $produk->idproduct }}</td>
+                            <td>
+                                @if($produk->gambar)
+                                    <img src="{{ asset('storage/' . $produk->gambar) }}" width="70" height="70" class="rounded shadow-sm" style="object-fit: cover;">
+                                @else
+                                    <span class="text-muted fst-italic">Tidak ada gambar</span>
+                                @endif
+                            </td>
+                            <td class="fw-semibold">{{ $produk->namaproduk }}</td>
+                            <td class="text-success fw-bold">Rp{{ number_format($produk->hargaproduk, 0, ',', '.') }}</td>
+                            <td>
+                                <a href="{{ route('admin.products.edit', $produk->idproduct) }}" class="btn btn-sm btn-outline-warning me-1">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form action="{{ route('admin.products.destroy', $produk->idproduct) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus produk ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="text-muted fst-italic">Belum ada produk yang ditambahkan.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    <table class="table table-bordered text-center align-middle">
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Gambar</th>
-                <th>Nama Produk</th>
-                <th>Harga</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($products as $produk)
-                <tr>
-                    <td>{{ $produk->idproduct }}</td>
-                    <td>
-                        @if($produk->gambar)
-                            <img src="{{ asset('storage/' . $produk->gambar) }}" width="80" height="80" style="object-fit: cover;">
-                        @else
-                            <span class="text-muted">Tidak ada gambar</span>
-                        @endif
-                    </td>
-                    <td>{{ $produk->namaproduk }}</td>
-                    <td>Rp{{ number_format($produk->hargaproduk, 0, ',', '.') }}</td>
-                    <td>
-                        <a href="{{ route('admin.products.edit', $produk) }}" class="btn btn-warning btn-sm">Edit</a>
-                        <form action="{{ route('admin.products.destroy', $produk) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus produk ini?')">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-danger btn-sm">Hapus</button>
-                        </form>
-                    </td>
-                </tr>
-            @empty
-                <tr><td colspan="5">Belum ada produk.</td></tr>
-            @endforelse
-        </tbody>
-    </table>
+    <!-- PAGINATION -->
+    <div class="d-flex justify-content-center mt-4">
+        {{ $products->links() }}
+    </div>
 </div>
+
+<!-- Tambahan Gaya -->
 <style>
     h1.display-6 {
-        letter-spacing: 0.5px;
         font-family: 'Segoe UI', Roboto, sans-serif;
+        letter-spacing: 0.5px;
+    }
+
+    .table th, .table td {
+        vertical-align: middle !important;
+    }
+
+    .card {
+        border-radius: 12px;
+    }
+
+    .btn i {
+        font-size: 14px;
     }
 </style>
 @endsection

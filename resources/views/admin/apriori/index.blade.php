@@ -35,18 +35,25 @@
         </div>
         <div class="card-body table-responsive">
             <table class="table table-bordered table-hover align-middle text-center">
-                <thead class="table-light">
-                    <tr><th>No</th><th>Item</th><th>Frekuensi</th></tr>
-                </thead>
-                <tbody>
-                    @foreach($frequent1Itemsets as $index => $itemset)
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>{{ implode(', ', $itemset['item']) }}</td>
-                            <td>{{ $itemset['frequency'] }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
+<thead class="table-light">
+    <tr>
+        <th>No</th>
+        <th>Item</th>
+        <th>Frekuensi Kemunculan</th>
+        <th>Support(%)</th>
+    </tr>
+            </thead>
+            <tbody>
+                @foreach($frequent1Itemsets as $index => $itemset)
+                    <tr>
+                        <td>{{ $index + 1 }}</td>
+                        <td>{{ implode(', ', $itemset['item']) }}</td>
+                        <td>{{ $itemset['frequency'] }}</td>
+                        <td>{{ number_format($itemset['support'], 2) }}%</td>
+                    </tr>
+                @endforeach
+            </tbody>
+
             </table>
         </div>
     </div>
@@ -90,18 +97,24 @@
                 <thead class="table-secondary">
                     <tr>
                         <th>No</th>
-                        <th>Rule</th>
-                        <th>Support</th>
-                        <th>Confidence</th>
+                        <th>Nama Produk 1</th>
+                        <th>Nama Produk 2</th>
+                        <th>Frekuensi Kemunculan 2 Itemset</th>
+                        <th>Frekuensi Kemunculan Produk 1</th>
+                        <th>Confidence (%)</th>
+                        <th>Aturan Asosiasi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($rules as $index => $rule)
                         <tr>
                             <td>{{ $index + 1 }}</td>
-                            <td>{{ $rule['rule'] }}</td>
-                            <td>{{ $rule['support'] }}</td>
-                            <td>{{ $rule['confidence'] }}</td>
+                            <td>{{ $rule['lhs'] }}</td>
+                            <td>{{ $rule['rhs'] }}</td>
+                            <td>{{ $rule['frequency_itemset'] }}</td>
+                            <td>{{ $rule['frequency_lhs'] }}</td>
+                            <td>{{ $rule['confidence'] }}%</td>
+                            <td>{{ $rule['rule_narrative'] }}</td>
                         </tr>
                     @endforeach
                 </tbody>
